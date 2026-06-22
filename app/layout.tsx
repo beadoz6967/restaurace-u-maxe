@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import {
   Cormorant_Garamond,
-  Big_Shoulders_Display,
+  Big_Shoulders,
   Inter,
 } from "next/font/google";
 import "./globals.css";
@@ -14,7 +14,7 @@ const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
 });
 
-const bigShoulders = Big_Shoulders_Display({
+const bigShoulders = Big_Shoulders({
   weight: ["500", "700", "800"],
   subsets: ["latin", "latin-ext"],
   variable: "--font-big-shoulders",
@@ -27,9 +27,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Restaurace U Maxe, České Budějovice",
+  title: "Restaurace U Maxe, Jindřichův Hradec",
   description:
-    "Restaurace U Maxe v Českých Budějovicích. Jídlo s sebou i na místě, nonstop.",
+    "Restaurace U Maxe v Jindřichově Hradci. Polední menu a obědy s sebou, objednávky online do 10:00. Otevřeno Po–Pá 10:00–13:30.",
 };
 
 export const viewport: Viewport = {
@@ -45,10 +45,14 @@ export default function RootLayout({
   return (
     <html
       lang="cs"
+      suppressHydrationWarning
       style={{ colorScheme: "dark" }}
       className={`${cormorant.variable} ${bigShoulders.variable} ${inter.variable}`}
     >
-      <body className="bg-bg-primary font-body text-beige antialiased">
+      <body
+        suppressHydrationWarning
+        className="bg-bg-primary font-body text-beige antialiased"
+      >
         <a
           href="#obsah"
           className="sr-only font-tactical uppercase tracking-widest focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:bg-gold focus:px-4 focus:py-2 focus:text-bg-primary"
@@ -56,7 +60,9 @@ export default function RootLayout({
           Přeskočit na obsah
         </a>
         <NavBar />
-        <div id="obsah">{children}</div>
+        <div id="obsah" tabIndex={-1} className="scroll-mt-24 focus:outline-none">
+          {children}
+        </div>
       </body>
     </html>
   );

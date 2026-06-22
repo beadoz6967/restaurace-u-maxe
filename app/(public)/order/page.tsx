@@ -1,9 +1,16 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import SectionLabel from "@/components/ui/SectionLabel";
+import Reveal from "@/components/ui/Reveal";
+import { formatKc } from "@/lib/format";
 import type { MenuItem } from "@/types";
+
+/** Visible keyboard focus, shared across the page's interactive controls. */
+const FOCUS_RING =
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary";
 
 const ITEMS: MenuItem[] = [
   { id: "h1", name: "Hovězí líčka na tmavém pivu", price: 289 },
@@ -53,14 +60,15 @@ export default function Order() {
   });
 
   return (
-    <main className="mx-auto max-w-[840px] px-6 pb-28 pt-32 md:px-10 md:pt-40">
+    <main className="mx-auto max-w-[1440px] px-6 pb-16 pt-24 md:px-10 md:pb-24 md:pt-32">
+      <form className="mx-auto max-w-[840px]" onSubmit={(e) => e.preventDefault()}>
       {/* Header */}
       <motion.header {...fade(0)}>
         <h1 className="font-display text-4xl font-bold italic text-cream md:text-6xl">
-          Manifest objednávky
+          Objednávka s sebou
         </h1>
-        <p className="mt-3 font-tactical text-sm font-bold uppercase tracking-[0.3em] text-gold">
-          Vyberte, co chcete vzít
+        <p className="mt-4 font-tactical text-sm font-bold uppercase tracking-[0.3em] text-gold">
+          Vyberte si z naší nabídky
         </p>
       </motion.header>
 
@@ -81,7 +89,7 @@ export default function Order() {
                   onClick={() => toggle(item.id)}
                   aria-pressed={checked}
                   aria-label={`Vybrat ${item.name}`}
-                  className={`flex h-6 w-6 shrink-0 items-center justify-center border transition-colors duration-200 ${
+                  className={`flex h-6 w-6 shrink-0 touch-manipulation items-center justify-center border transition-colors duration-200 ${FOCUS_RING} ${
                     checked
                       ? "border-gold"
                       : "border-[#C8962A44] hover:border-gold/70"
@@ -90,7 +98,9 @@ export default function Order() {
                   {checked && <Check />}
                 </button>
 
-                <span className="flex-1 font-body text-beige">{item.name}</span>
+                <span className="min-w-0 flex-1 break-words font-body text-beige">
+                  {item.name}
+                </span>
 
                 {/* Quantity stepper */}
                 <div
@@ -102,7 +112,7 @@ export default function Order() {
                     type="button"
                     aria-label="Ubrat"
                     onClick={() => setQuantity(item.id, count - 1)}
-                    className="flex h-7 w-7 items-center justify-center border border-[#C8962A44] font-tactical text-beige transition-colors duration-200 hover:border-rust hover:text-rust"
+                    className={`flex h-7 w-7 touch-manipulation items-center justify-center border border-[#C8962A44] font-tactical text-beige transition-colors duration-200 hover:border-rust hover:text-rust ${FOCUS_RING}`}
                   >
                     −
                   </button>
@@ -113,14 +123,14 @@ export default function Order() {
                     type="button"
                     aria-label="Přidat"
                     onClick={() => setQuantity(item.id, count + 1)}
-                    className="flex h-7 w-7 items-center justify-center border border-[#C8962A44] font-tactical text-beige transition-colors duration-200 hover:border-gold hover:text-gold"
+                    className={`flex h-7 w-7 touch-manipulation items-center justify-center border border-[#C8962A44] font-tactical text-beige transition-colors duration-200 hover:border-gold hover:text-gold ${FOCUS_RING}`}
                   >
                     +
                   </button>
                 </div>
 
                 <span className="w-20 shrink-0 text-right font-body tabular-nums text-gold">
-                  {item.price} Kč
+                  {formatKc(item.price)}
                 </span>
               </div>
             );
@@ -131,16 +141,19 @@ export default function Order() {
           <span className="font-tactical text-sm font-bold uppercase tracking-[0.3em] text-beige/60">
             Celkem
           </span>
-          <span className="font-body text-2xl tabular-nums text-gold">
-            {total} Kč
+          <span
+            aria-live="polite"
+            className="font-body text-2xl tabular-nums text-gold"
+          >
+            {formatKc(total)}
           </span>
         </div>
       </motion.section>
 
       {/* STEP 2 — Details */}
-      <motion.section {...fade(0.16)} className="mt-20">
+      <Reveal className="mt-16">
         <SectionLabel label="02 · Detaily" />
-        <div className="mt-10 flex flex-col gap-10">
+        <div className="mt-6 flex flex-col gap-8">
           <FloatingInput
             id="name"
             label="Jméno"
@@ -153,14 +166,19 @@ export default function Order() {
             type="tel"
             autoComplete="tel"
           />
-          <FloatingInput id="time" label="Čas vyzvednutí" type="time" />
+          <FloatingInput
+            id="time"
+            label="Čas vyzvednutí"
+            type="time"
+            autoComplete="off"
+          />
         </div>
-      </motion.section>
+      </Reveal>
 
       {/* STEP 3 — Payment */}
-      <motion.section {...fade(0.24)} className="mt-20">
+      <Reveal className="mt-16">
         <SectionLabel label="03 · Platba" />
-        <div className="mt-6 flex flex-col gap-3">
+        <div className="mt-6 flex flex-col gap-4">
           <PaymentRow
             label="Platba na místě"
             selected={payment === "site"}
@@ -172,21 +190,26 @@ export default function Order() {
             onClick={() => setPayment("card")}
           />
         </div>
-      </motion.section>
+      </Reveal>
 
       {/* Submit */}
-      <motion.button
-        {...fade(0.32)}
-        type="button"
-        className="group mt-16 flex w-full items-center justify-center gap-3 border border-gold py-6 transition-colors duration-200 hover:border-rust"
-      >
-        <span className="font-tactical text-xl font-extrabold uppercase tracking-[0.25em] text-beige transition-colors duration-200 group-hover:text-cream">
-          Vzít to
-        </span>
-        <span className="font-tactical text-xl text-gold transition-transform duration-200 group-hover:translate-x-1">
-          →
-        </span>
-      </motion.button>
+      <Reveal className="mt-16">
+        <button
+          type="submit"
+          className={`group flex w-full touch-manipulation items-center justify-center gap-4 border border-gold py-6 transition-colors duration-200 hover:border-rust ${FOCUS_RING}`}
+        >
+          <span className="font-tactical text-xl font-extrabold uppercase tracking-[0.25em] text-beige transition-colors duration-200 group-hover:text-cream">
+            Odeslat objednávku
+          </span>
+          <span
+            aria-hidden
+            className="font-tactical text-xl text-gold transition-transform duration-200 group-hover:translate-x-1"
+          >
+            →
+          </span>
+        </button>
+      </Reveal>
+      </form>
     </main>
   );
 }
@@ -206,6 +229,7 @@ function FloatingInput({
     <div className="relative">
       <input
         id={id}
+        name={id}
         type={type}
         autoComplete={autoComplete}
         placeholder=" "
@@ -235,7 +259,7 @@ function PaymentRow({
       type="button"
       onClick={onClick}
       aria-pressed={selected}
-      className={`w-full border px-6 py-5 text-left font-tactical text-base font-bold uppercase tracking-[0.2em] transition-colors duration-200 ${
+      className={`w-full touch-manipulation border px-6 py-4 text-left font-tactical text-base font-bold uppercase tracking-[0.2em] transition-colors duration-200 ${FOCUS_RING} ${
         selected
           ? "border-gold bg-[#C8962A0A] text-cream"
           : "border-[#C8962A22] text-beige/80 hover:border-rust"

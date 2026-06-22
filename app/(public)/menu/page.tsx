@@ -1,7 +1,10 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import SectionLabel from "@/components/ui/SectionLabel";
+import PhotoCell from "@/components/ui/PhotoCell";
+import { formatKc, formatDate } from "@/lib/format";
 import type { MenuCategory } from "@/types";
 
 const MENU: MenuCategory[] = [
@@ -33,85 +36,138 @@ const MENU: MenuCategory[] = [
       },
       {
         id: "h3",
-        name: "Smažený řízek z vepřové kotlety, bramborový salát",
-        price: 219,
+        name: "Smažený sýr s bramborem",
+        price: 159,
       },
       {
         id: "h4",
-        name: "Pečené kuřecí stehno, opékané brambory, dušený špenát",
-        price: 198,
+        name: "Koprová omáčka s knedlíkem",
+        price: 169,
       },
     ],
   },
   {
     title: "Dezert",
-    allergens: "Obsahuje: lepek (1), mléko (7), vejce (3), skořápkové (8).",
+    allergens: "Obsahuje: lepek (1), mléko (7), vejce (3).",
     items: [
-      { id: "d1", name: "Domácí jablečný štrúdl, šlehačka", price: 89 },
-      { id: "d2", name: "Čokoládový fondant, arašídová zmrzlina", price: 119 },
+      { id: "d1", name: "Plněné jahodové knedlíky", price: 139 },
+      { id: "d2", name: "Šišky s mákem", price: 119 },
     ],
   },
 ];
 
-const TODAY = "21. 06. 2026";
+const TODAY = formatDate(new Date(2026, 5, 21));
+
+/** Photos for the dishes we have shots of, keyed by menu item id. */
+const PHOTOS: Record<string, { src: string; alt: string; desc: string }> = {
+  h3: {
+    src: "/images/smazeny-syr-s-bramborem.jpg",
+    alt: "Smažený sýr s vařeným bramborem a tatarkou",
+    desc: "Smažený eidam s vařeným bramborem a domácí tatarkou.",
+  },
+  h4: {
+    src: "/images/koprova-omacka-s-knedlikem.jpg",
+    alt: "Koprová omáčka s vařeným hovězím, vejcem a houskovým knedlíkem",
+    desc: "Krémová koprová omáčka s hovězím, vejcem a houskovým knedlíkem.",
+  },
+  d1: {
+    src: "/images/plnene-jahodove-knedliky.jpg",
+    alt: "Ovocné knedlíky plněné jahodami s tvarohem a moučkovým cukrem",
+    desc: "Kynuté knedlíky s jahodami, tvarohem a rozpuštěným máslem.",
+  },
+  d2: {
+    src: "/images/sisky-s-makemjpg.jpg",
+    alt: "Bramborové šišky s mákem a moučkovým cukrem",
+    desc: "Domácí bramborové šišky s mletým mákem a cukrem.",
+  },
+};
 
 export default function Menu() {
   const reduce = useReducedMotion();
 
   return (
-    <main className="mx-auto max-w-[1100px] px-6 pb-28 pt-32 md:px-16 md:pt-40">
-      <motion.div
-        initial={{ opacity: 0, y: reduce ? 0 : 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-      >
-        <SectionLabel label="Dnešní příděl" meta={TODAY} />
-      </motion.div>
+    <main className="mx-auto max-w-[1440px] px-6 pb-16 pt-24 md:px-10 md:pb-24 md:pt-32">
+      <div className="mx-auto max-w-[1100px]">
+        <motion.div
+          initial={{ opacity: 0, y: reduce ? 0 : 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
+          <SectionLabel label="Jídelní lístek" meta={TODAY} as="h1" />
+        </motion.div>
 
-      <div className="mt-16 flex flex-col gap-16">
-        {MENU.map((category, ci) => (
-          <motion.section
-            key={category.title}
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{
-              duration: 0.5,
-              ease: "easeOut",
-              delay: reduce ? 0 : ci * 0.05,
-            }}
-          >
+        <div className="mt-16 flex flex-col gap-16">
+        {MENU.map((category) => (
+          <div key={category.title}>
             <h2 className="font-tactical text-sm font-bold uppercase tracking-[0.35em] text-rust">
               {category.title}
             </h2>
 
             <div className="mt-6 flex flex-col gap-1">
-              {category.items.map((item) => (
-                <motion.div
-                  key={item.id}
-                  initial={false}
-                  whileHover={reduce ? undefined : { x: 6 }}
-                  transition={{ duration: 0.2, ease: "easeOut" }}
-                  className="group flex items-baseline gap-4 py-3"
-                >
-                  <span className="font-body font-medium text-beige transition-colors duration-200 group-hover:text-cream">
-                    {item.name}
-                  </span>
-                  <span className="h-px flex-1 translate-y-[-2px] border-b border-dashed border-[#C8962A33] transition-colors duration-200 group-hover:border-gold" />
-                  <span className="shrink-0 font-body tabular-nums text-gold">
-                    {item.price} Kč
-                  </span>
-                </motion.div>
-              ))}
+              {category.items.map((item) => {
+                const photo = PHOTOS[item.id];
+
+                // Dishes we have a photo of render as a small 4:5 cell beside
+                // the name + a short description, top-aligned with the type.
+                if (photo) {
+                  return (
+                    <div key={item.id} className="flex flex-col gap-4 py-4">
+                      {/* Name + price row — flush-left, identical to the
+                          photo-less rows so every dish name shares one baseline. */}
+                      <div className="flex items-baseline gap-4">
+                        <span className="font-body font-medium text-beige">
+                          {item.name}
+                        </span>
+                        <span className="h-px flex-1 translate-y-[-2px] border-b border-dashed border-[#C8962A33]" />
+                        <span className="shrink-0 font-body tabular-nums text-gold">
+                          {formatKc(item.price)}
+                        </span>
+                      </div>
+                      {/* Photo + description sit below the name, out of its
+                          horizontal flow. */}
+                      <div className="flex items-start gap-6">
+                        <PhotoCell
+                          src={photo.src}
+                          alt={photo.alt}
+                          sizes="(max-width: 768px) 35vw, 160px"
+                          className="aspect-[4/5] w-32 shrink-0 md:w-40"
+                        />
+                        <p className="max-w-md font-body text-sm text-beige/50">
+                          {photo.desc}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                }
+
+                return (
+                  <motion.div
+                    key={item.id}
+                    initial={false}
+                    whileHover={reduce ? undefined : { x: 6 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                    className="group flex items-baseline gap-4 py-2"
+                  >
+                    <span className="font-body font-medium text-beige transition-colors duration-200 group-hover:text-cream">
+                      {item.name}
+                    </span>
+                    <span className="h-px flex-1 translate-y-[-2px] border-b border-dashed border-[#C8962A33] transition-colors duration-200 group-hover:border-gold" />
+                    <span className="shrink-0 font-body tabular-nums text-gold">
+                      {formatKc(item.price)}
+                    </span>
+                  </motion.div>
+                );
+              })}
             </div>
 
             {category.allergens && (
-              <p className="mt-5 font-body text-sm text-beige/40">
+              <p className="mt-4 font-body text-sm text-beige/40">
                 {category.allergens}
               </p>
             )}
-          </motion.section>
-        ))}
+          </div>
+          ))}
+        </div>
       </div>
     </main>
   );

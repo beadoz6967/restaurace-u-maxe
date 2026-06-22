@@ -71,3 +71,5 @@ All currently empty. New components go in the appropriate subdirectory.
 ### Path Aliases
 
 `@/*` maps to the project root. Use `@/lib/supabase`, `@/components/ui/...`, etc.
+
+Food photos in public/images are placeholder/showcase content — replaced with real client photos post-sale; treat as final for layout

@@ -1,8 +1,9 @@
 # Restaurace U Maxe
 
-A Mad Max–inspired restaurant website with online ordering and a live kitchen
-display. Near-black backdrop, desert-gold accents, rust hovers, zero rounded
-corners — desert-forged dining on the edge of the wasteland.
+A restaurant website with online ordering and a live kitchen display, carrying
+a subtle Mad Max–inspired visual design. Near-black backdrop, desert-gold
+accents, rust hovers, zero rounded corners — an industrial, weathered look in
+service of a professional restaurant brand.
 
 ## Stack
 
