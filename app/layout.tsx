@@ -7,6 +7,7 @@ import {
 import "./globals.css";
 import NavBar from "@/components/ui/NavBar";
 import RestaurantSchema from "@/components/ui/RestaurantSchema";
+import { SITE_URL } from "@/lib/config";
 
 const cormorant = Cormorant_Garamond({
   weight: ["400", "600", "700"],
@@ -28,7 +29,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://restaurace-u-maxe.vercel.app"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Restaurace U Maxe · Poctivá česká kuchyně · Jindřichův Hradec",
     template: "%s — Restaurace U Maxe",
@@ -51,7 +52,7 @@ export const metadata: Metadata = {
     siteName: "Restaurace U Maxe",
     title: "Restaurace U Maxe · Poctivá česká kuchyně",
     description:
-      "Polední menu a obědy s sebou v Jindřichově Hradci. Objednávky online do 10:00 na umaxe.sebou.cz.",
+      "Polední menu a obědy s sebou v Jindřichově Hradci. Objednávky do 10:00.",
   },
   twitter: {
     card: "summary_large_image",

@@ -1,5 +1,10 @@
 import { createClient } from '@supabase/supabase-js'
 
-// TODO: initialize the Supabase client with values from env in a later step
-//   NEXT_PUBLIC_SUPABASE_URL · NEXT_PUBLIC_SUPABASE_ANON_KEY
-export const supabase = createClient('', '')
+// Anon client — safe for the browser (kitchen display, realtime).
+// The service-role/admin client lives in `lib/supabase-admin.ts` so that
+// importing this module from a client component never evaluates (and crashes
+// on) the missing service-role key.
+export const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)

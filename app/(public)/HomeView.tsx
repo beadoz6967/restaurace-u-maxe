@@ -169,9 +169,9 @@ function KitchenSection() {
       <div className="relative z-10 mx-auto max-w-[1440px] px-6 md:px-10">
         {/* Restrained header — the dish names carry the size. */}
         <Reveal>
-          <p className="font-body text-[0.7rem] font-medium uppercase tracking-[0.2em] text-gold">
+          <h2 className="font-tactical text-sm font-bold uppercase tracking-[0.35em] text-rust">
             Z naší kuchyně
-          </p>
+          </h2>
           <p className="mt-4 font-display text-2xl italic text-beige/70 md:text-3xl">
             Sladké i slané.
           </p>

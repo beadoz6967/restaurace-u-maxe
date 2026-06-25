@@ -1,4 +1,4 @@
-const SITE_URL = "https://restaurace-u-maxe.vercel.app";
+import { SITE_URL } from "@/lib/config";
 
 const schema = {
   "@context": "https://schema.org",
@@ -33,18 +33,6 @@ const schema = {
     },
   ],
   menu: `${SITE_URL}/menu`,
-  potentialAction: {
-    "@type": "OrderAction",
-    target: {
-      "@type": "EntryPoint",
-      urlTemplate: "https://umaxe.sebou.cz",
-      actionPlatform: [
-        "http://schema.org/DesktopWebPlatform",
-        "http://schema.org/MobileWebPlatform",
-      ],
-    },
-    deliveryMethod: ["http://purl.org/goodrelations/v1#DeliveryModePickUp"],
-  },
   sameAs: [
     "https://www.facebook.com/UMaxeJH/",
     "https://www.instagram.com/umaxerestaurace/",

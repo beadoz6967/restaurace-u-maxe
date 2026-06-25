@@ -41,29 +41,20 @@ export default function ContactView() {
 
           <a
             href="tel:+420728814736"
-            className="mt-12 font-body text-3xl font-medium text-gold transition-colors duration-200 hover:text-rust md:text-4xl"
+            className="mt-12 font-body text-3xl font-medium text-gold transition-colors duration-200 hover:text-rust focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary md:text-4xl"
           >
             +420 728 814 736
           </a>
 
           <a
             href="mailto:Objednavkyumaxe@seznam.cz"
-            className="mt-4 font-body text-lg text-beige transition-colors duration-200 hover:text-gold"
+            className="mt-4 font-body text-lg text-beige transition-colors duration-200 hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary"
           >
             Objednavkyumaxe@seznam.cz
           </a>
 
           <p className="mt-6 max-w-sm font-body text-sm text-beige/60">
-            Objednávky online do 10:00 na{" "}
-            <a
-              href="https://umaxe.sebou.cz"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gold underline-offset-4 transition-colors duration-200 hover:text-rust hover:underline"
-            >
-              umaxe.sebou.cz
-            </a>
-            .
+            Objednávky s sebou přijímáme každý den do 10:00.
           </p>
 
           <div className="mt-12">

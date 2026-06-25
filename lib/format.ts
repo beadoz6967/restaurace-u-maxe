@@ -16,12 +16,5 @@ const fullDate = new Intl.DateTimeFormat("cs-CZ", {
   year: "numeric",
 });
 
-const dayMonth = new Intl.DateTimeFormat("cs-CZ", {
-  day: "2-digit",
-  month: "2-digit",
-});
-
 /** "21. 06. 2026" */
 export const formatDate = (d: Date) => fullDate.format(d);
-/** "21. 06." */
-export const formatDayMonth = (d: Date) => dayMonth.format(d);

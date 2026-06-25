@@ -20,10 +20,10 @@ export default function MenuView({
 
   // Footer with the shared prices renders only when at least one price is set.
   const { menuPrice, halfPortionPrice, footerNote } = dailyMenu ?? {};
-  const showFooter = menuPrice !== undefined || halfPortionPrice !== undefined;
+  const showFooter = menuPrice != null || halfPortionPrice != null;
   const priceParts: string[] = [];
-  if (menuPrice !== undefined) priceParts.push(`Menu á ${menuPrice},- Kč`);
-  if (halfPortionPrice !== undefined)
+  if (menuPrice != null) priceParts.push(`Menu á ${menuPrice},- Kč`);
+  if (halfPortionPrice != null)
     priceParts.push(`Poloviční porce á ${halfPortionPrice},- Kč`);
 
   return (
@@ -57,7 +57,7 @@ export default function MenuView({
                           photo-less rows so every dish name shares one baseline. */}
                       <div className="flex items-baseline gap-4">
                         <ItemName item={item} />
-                        {item.price !== undefined && (
+                        {item.price != null && (
                           <>
                             <span className="h-px flex-1 translate-y-[-2px] border-b border-dashed border-[#C8962A33]" />
                             <span className="shrink-0 font-body tabular-nums text-gold">
@@ -71,7 +71,7 @@ export default function MenuView({
                       <div className="flex items-start gap-6">
                         <PhotoCell
                           src={image.url}
-                          alt={image.alt}
+                          alt={image.alt || item.name}
                           sizes="(max-width: 768px) 35vw, 160px"
                           className="aspect-[4/5] w-32 shrink-0 md:w-40"
                         />
@@ -92,7 +92,7 @@ export default function MenuView({
                     className="group flex items-baseline gap-4 py-2"
                   >
                     <ItemName item={item} hover />
-                    {item.price !== undefined && (
+                    {item.price != null && (
                       <>
                         <span className="h-px flex-1 translate-y-[-2px] border-b border-dashed border-[#C8962A33] transition-colors duration-200 group-hover:border-gold" />
                         <span className="shrink-0 font-body tabular-nums text-gold">

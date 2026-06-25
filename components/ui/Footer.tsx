@@ -1,4 +1,4 @@
-const YEAR = 2026;
+const YEAR = new Date().getFullYear();
 
 /**
  * Compact site footer for public pages — address, opening hours, and
@@ -46,23 +46,15 @@ export default function Footer() {
             <div className="mt-4 flex flex-col items-start gap-2 font-body text-sm">
               <a
                 href="tel:+420728814736"
-                className="text-gold transition-colors duration-200 hover:text-rust"
+                className="text-gold transition-colors duration-200 hover:text-rust focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary"
               >
                 +420 728 814 736
               </a>
               <a
                 href="mailto:Objednavkyumaxe@seznam.cz"
-                className="text-beige/80 transition-colors duration-200 hover:text-gold"
+                className="text-beige/80 transition-colors duration-200 hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary"
               >
                 Objednavkyumaxe@seznam.cz
-              </a>
-              <a
-                href="https://umaxe.sebou.cz"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-beige/80 transition-colors duration-200 hover:text-gold"
-              >
-                Objednávky online → umaxe.sebou.cz
               </a>
             </div>
           </div>

@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
 import { getDailyMenu } from "@/lib/queries";
+import { isBeforeOrderCutoff } from "@/lib/time";
 import OrderForm, { type OrderItem } from "./OrderForm";
 
-// Re-fetch the menu from Sanity at most once a minute so edits in Studio
-// surface without a redeploy.
-export const revalidate = 60;
+// Rendered dynamically so the 10:00 cutoff and the latest Studio edits are
+// evaluated per request.
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Objednávka s sebou",
   description:
-    "Objednejte si oběd s sebou z Restaurace U Maxe online. Objednávky přijímáme do 10:00, vyzvednutí v poledne.",
+    "Objednejte si oběd s sebou z Restaurace U Maxe. Objednávky přijímáme do 10:00, vyzvednutí v poledne. Platba v hotovosti při převzetí.",
   alternates: { canonical: "/order" },
 };
 
@@ -23,10 +24,10 @@ export default async function Order() {
     .flatMap((category) => category.items)
     .flatMap((item, index) => {
       const price = item.price ?? menuPrice;
-      return price === undefined
+      return price == null
         ? []
-        : [{ id: String(index), name: item.name, price }];
+        : [{ id: String(index), name: item.name, price, weight: item.weight }];
     });
 
-  return <OrderForm items={items} />;
+  return <OrderForm items={items} isOpen={isBeforeOrderCutoff()} />;
 }

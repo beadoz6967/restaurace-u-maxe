@@ -12,11 +12,15 @@ export interface OrderItem {
   id: string;
   name: string;
   price: number;
+  /** Optional weight prefix, e.g. "140 g". */
+  weight?: string;
 }
 
 /** Visible keyboard focus, shared across the page's interactive controls. */
 const FOCUS_RING =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary";
+
+type Status = "idle" | "submitting" | "success" | "error";
 
 function Check() {
   return (
@@ -31,9 +35,31 @@ function Check() {
   );
 }
 
-export default function OrderForm({ items }: { items: OrderItem[] }) {
+/** Full-bleed centred message used for the closed and success states. */
+function CenteredNotice({ title, sub }: { title: string; sub: string }) {
+  return (
+    <main className="mx-auto flex min-h-[70svh] max-w-[840px] flex-col items-center justify-center px-6 text-center md:px-10">
+      <p className="font-display text-4xl italic text-cream md:text-5xl">
+        {title}
+      </p>
+      <p className="mt-6 max-w-md font-body text-beige/60">{sub}</p>
+    </main>
+  );
+}
+
+export default function OrderForm({
+  items,
+  isOpen,
+}: {
+  items: OrderItem[];
+  isOpen: boolean;
+}) {
   const reduce = useReducedMotion();
   const [qty, setQty] = useState<Record<string, number>>({});
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [status, setStatus] = useState<Status>("idle");
+  const [errorMsg, setErrorMsg] = useState("");
 
   const setQuantity = (id: string, next: number) =>
     setQty((prev) => ({ ...prev, [id]: Math.max(0, next) }));
@@ -41,10 +67,15 @@ export default function OrderForm({ items }: { items: OrderItem[] }) {
   const toggle = (id: string) =>
     setQty((prev) => ({ ...prev, [id]: prev[id] ? 0 : 1 }));
 
+  const selected = useMemo(
+    () => items.filter((item) => (qty[item.id] ?? 0) > 0),
+    [items, qty]
+  );
+
   const total = useMemo(
     () =>
-      items.reduce((sum, item) => sum + item.price * (qty[item.id] ?? 0), 0),
-    [items, qty]
+      selected.reduce((sum, item) => sum + item.price * (qty[item.id] ?? 0), 0),
+    [selected, qty]
   );
 
   const fade = (delay = 0) => ({
@@ -53,147 +84,261 @@ export default function OrderForm({ items }: { items: OrderItem[] }) {
     transition: { duration: 0.5, ease: "easeOut" as const, delay },
   });
 
+  // Closed: past the 10:00 cutoff, or there is no menu to order from today.
+  if (!isOpen || items.length === 0) {
+    return (
+      <CenteredNotice
+        title="Objednávky jsou dnes uzavřeny."
+        sub="Objednávky přijímáme každý den do 10:00."
+      />
+    );
+  }
+
+  if (status === "success") {
+    return (
+      <CenteredNotice
+        title="Objednávka přijata."
+        sub="Potvrdíme vám ji telefonicky. Vyzvednutí v poledne."
+      />
+    );
+  }
+
+  const canSubmit =
+    selected.length > 0 && name.trim() !== "" && phone.trim() !== "";
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!canSubmit || status === "submitting") return;
+
+    setStatus("submitting");
+    setErrorMsg("");
+
+    const payload = {
+      customerName: name.trim(),
+      customerPhone: phone.trim(),
+      items: selected.map((item) => ({
+        name: item.name,
+        quantity: qty[item.id] ?? 0,
+        price: item.price,
+      })),
+      total,
+    };
+
+    try {
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.status === 201) {
+        setStatus("success");
+        return;
+      }
+
+      const data: { error?: string } = await res.json().catch(() => ({}));
+      setErrorMsg(data.error ?? "Objednávku se nepodařilo odeslat.");
+      setStatus("error");
+    } catch {
+      setErrorMsg("Objednávku se nepodařilo odeslat. Zkuste to prosím znovu.");
+      setStatus("error");
+    }
+  }
+
   return (
     <main className="mx-auto max-w-[1440px] px-6 pb-16 pt-24 md:px-10 md:pb-24 md:pt-32">
-      <form className="mx-auto max-w-[840px]" onSubmit={(e) => e.preventDefault()}>
-      {/* Header */}
-      <motion.header {...fade(0)}>
-        <h1 className="font-display text-4xl font-bold italic text-cream md:text-6xl">
-          Objednávka s sebou
-        </h1>
-        <p className="mt-4 font-tactical text-sm font-bold uppercase tracking-[0.3em] text-gold">
-          Vyberte si z naší nabídky
-        </p>
-      </motion.header>
+      <form className="mx-auto max-w-[840px]" onSubmit={handleSubmit}>
+        {/* Header */}
+        <motion.header {...fade(0)}>
+          <h1 className="font-display text-4xl font-bold italic text-cream md:text-6xl">
+            Objednávka s sebou
+          </h1>
+          <p className="mt-4 font-tactical text-sm font-bold uppercase tracking-[0.3em] text-gold">
+            Vyberte si z naší nabídky
+          </p>
+        </motion.header>
 
-      {/* STEP 1 — Items */}
-      <motion.section {...fade(0.08)} className="mt-16">
-        <SectionLabel label="01 · Položky" />
-        <div className="mt-6 flex flex-col">
-          {items.map((item) => {
-            const count = qty[item.id] ?? 0;
-            const checked = count > 0;
-            return (
-              <div
-                key={item.id}
-                className="flex items-center gap-4 border-b border-[#C8962A22] py-4"
-              >
-                <button
-                  type="button"
-                  onClick={() => toggle(item.id)}
-                  aria-pressed={checked}
-                  aria-label={`Vybrat ${item.name}`}
-                  className={`flex h-6 w-6 shrink-0 touch-manipulation items-center justify-center border transition-colors duration-200 ${FOCUS_RING} ${
-                    checked
-                      ? "border-gold"
-                      : "border-[#C8962A44] hover:border-gold/70"
-                  }`}
-                >
-                  {checked && <Check />}
-                </button>
-
-                <span className="min-w-0 flex-1 break-words font-body text-beige">
-                  {item.name}
-                </span>
-
-                {/* Quantity stepper */}
+        {/* STEP 1 — Items */}
+        <motion.section {...fade(0.08)} className="mt-16">
+          <SectionLabel label="01 · Položky" />
+          <div className="mt-6 flex flex-col">
+            {items.map((item) => {
+              const count = qty[item.id] ?? 0;
+              const checked = count > 0;
+              return (
                 <div
-                  className={`flex items-center transition-opacity duration-200 ${
-                    checked ? "opacity-100" : "pointer-events-none opacity-30"
-                  }`}
+                  key={item.id}
+                  className="flex items-center gap-4 border-b border-[#C8962A22] py-4"
                 >
                   <button
                     type="button"
-                    aria-label="Ubrat"
-                    onClick={() => setQuantity(item.id, count - 1)}
-                    className={`flex h-7 w-7 touch-manipulation items-center justify-center border border-[#C8962A44] font-tactical text-beige transition-colors duration-200 hover:border-rust hover:text-rust ${FOCUS_RING}`}
+                    onClick={() => toggle(item.id)}
+                    aria-pressed={checked}
+                    aria-label={`Vybrat ${item.name}`}
+                    className={`flex h-6 w-6 shrink-0 touch-manipulation items-center justify-center border transition-colors duration-200 ${FOCUS_RING} ${
+                      checked
+                        ? "border-gold"
+                        : "border-[#C8962A44] hover:border-gold/70"
+                    }`}
                   >
-                    −
+                    {checked && <Check />}
                   </button>
-                  <span className="w-8 text-center font-body tabular-nums text-cream">
-                    {count}
-                  </span>
-                  <button
-                    type="button"
-                    aria-label="Přidat"
-                    onClick={() => setQuantity(item.id, count + 1)}
-                    className={`flex h-7 w-7 touch-manipulation items-center justify-center border border-[#C8962A44] font-tactical text-beige transition-colors duration-200 hover:border-gold hover:text-gold ${FOCUS_RING}`}
-                  >
-                    +
-                  </button>
-                </div>
 
-                <span className="w-20 shrink-0 text-right font-body tabular-nums text-gold">
-                  {formatKc(item.price)}
+                  <span className="min-w-0 flex-1 break-words font-body text-beige">
+                    {item.weight && (
+                      <span className="font-normal text-beige/40">
+                        {item.weight}{" "}
+                      </span>
+                    )}
+                    {item.name}
+                  </span>
+
+                  {/* Quantity stepper */}
+                  <div
+                    className={`flex items-center transition-opacity duration-200 ${
+                      checked ? "opacity-100" : "pointer-events-none opacity-30"
+                    }`}
+                  >
+                    <button
+                      type="button"
+                      aria-label="Ubrat"
+                      onClick={() => setQuantity(item.id, count - 1)}
+                      className={`flex h-7 w-7 touch-manipulation items-center justify-center border border-[#C8962A44] font-tactical text-beige transition-colors duration-200 hover:border-rust hover:text-rust ${FOCUS_RING}`}
+                    >
+                      −
+                    </button>
+                    <span className="w-8 text-center font-body tabular-nums text-cream">
+                      {count}
+                    </span>
+                    <button
+                      type="button"
+                      aria-label="Přidat"
+                      onClick={() => setQuantity(item.id, count + 1)}
+                      className={`flex h-7 w-7 touch-manipulation items-center justify-center border border-[#C8962A44] font-tactical text-beige transition-colors duration-200 hover:border-gold hover:text-gold ${FOCUS_RING}`}
+                    >
+                      +
+                    </button>
+                  </div>
+
+                  <span className="w-20 shrink-0 text-right font-body tabular-nums text-gold">
+                    {formatKc(item.price)}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="mt-6 flex items-baseline justify-between">
+            <span className="font-tactical text-sm font-bold uppercase tracking-[0.3em] text-beige/60">
+              Celkem
+            </span>
+            <span
+              aria-live="polite"
+              className="font-body text-2xl tabular-nums text-gold"
+            >
+              {formatKc(total)}
+            </span>
+          </div>
+        </motion.section>
+
+        {/* STEP 2 — Details */}
+        <Reveal className="mt-16">
+          <SectionLabel label="02 · Detaily" />
+          <div className="mt-6 flex flex-col gap-8">
+            <FloatingInput
+              id="name"
+              label="Jméno"
+              type="text"
+              autoComplete="name"
+              value={name}
+              onChange={setName}
+              required
+            />
+            <FloatingInput
+              id="phone"
+              label="Telefon"
+              type="tel"
+              autoComplete="tel"
+              value={phone}
+              onChange={setPhone}
+              required
+            />
+          </div>
+        </Reveal>
+
+        {/* STEP 3 — Summary */}
+        <Reveal className="mt-16">
+          <SectionLabel label="03 · Shrnutí" />
+          {selected.length === 0 ? (
+            <p className="mt-6 font-body text-beige/50">
+              Zatím jste nevybrali žádné položky.
+            </p>
+          ) : (
+            <div className="mt-6 flex flex-col">
+              {selected.map((item) => {
+                const count = qty[item.id] ?? 0;
+                return (
+                  <div
+                    key={item.id}
+                    className="flex items-baseline gap-4 border-b border-[#C8962A22] py-4"
+                  >
+                    <span className="font-body tabular-nums text-beige/60">
+                      {count}×
+                    </span>
+                    <span className="min-w-0 flex-1 break-words font-body text-beige">
+                      {item.weight && (
+                        <span className="font-normal text-beige/40">
+                          {item.weight}{" "}
+                        </span>
+                      )}
+                      {item.name}
+                    </span>
+                    <span className="shrink-0 font-body tabular-nums text-gold">
+                      {formatKc(item.price * count)}
+                    </span>
+                  </div>
+                );
+              })}
+              <div className="mt-6 flex items-baseline justify-between">
+                <span className="font-tactical text-sm font-bold uppercase tracking-[0.3em] text-beige/60">
+                  Celkem
+                </span>
+                <span className="font-body text-2xl tabular-nums text-gold">
+                  {formatKc(total)}
                 </span>
               </div>
-            );
-          })}
-        </div>
+            </div>
+          )}
+          <p className="mt-8 font-body text-beige">
+            Platba probíhá v hotovosti při převzetí objednávky.
+          </p>
+        </Reveal>
 
-        <div className="mt-6 flex items-baseline justify-between">
-          <span className="font-tactical text-sm font-bold uppercase tracking-[0.3em] text-beige/60">
-            Celkem
-          </span>
-          <span
-            aria-live="polite"
-            className="font-body text-2xl tabular-nums text-gold"
+        {/* Submit */}
+        <Reveal className="mt-16">
+          <button
+            type="submit"
+            disabled={!canSubmit || status === "submitting"}
+            className={`group flex w-full touch-manipulation items-center justify-center gap-4 border border-gold py-6 transition-colors duration-200 hover:border-rust disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-gold ${FOCUS_RING}`}
           >
-            {formatKc(total)}
-          </span>
-        </div>
-      </motion.section>
-
-      {/* STEP 2 — Details */}
-      <Reveal className="mt-16">
-        <SectionLabel label="02 · Detaily" />
-        <div className="mt-6 flex flex-col gap-8">
-          <FloatingInput
-            id="name"
-            label="Jméno"
-            type="text"
-            autoComplete="name"
-          />
-          <FloatingInput
-            id="phone"
-            label="Telefon"
-            type="tel"
-            autoComplete="tel"
-          />
-          <FloatingInput
-            id="time"
-            label="Čas vyzvednutí"
-            type="time"
-            autoComplete="off"
-          />
-        </div>
-      </Reveal>
-
-      {/* STEP 3 — Payment */}
-      <Reveal className="mt-16">
-        <SectionLabel label="03 · Platba" />
-        <p className="mt-6 font-body text-beige">
-          Platba probíhá v hotovosti při převzetí objednávky.
-        </p>
-      </Reveal>
-
-      {/* Submit */}
-      <Reveal className="mt-16">
-        <button
-          type="submit"
-          className={`group flex w-full touch-manipulation items-center justify-center gap-4 border border-gold py-6 transition-colors duration-200 hover:border-rust ${FOCUS_RING}`}
-        >
-          <span className="font-tactical text-xl font-extrabold uppercase tracking-[0.25em] text-beige transition-colors duration-200 group-hover:text-cream">
-            Odeslat objednávku
-          </span>
-          <span
-            aria-hidden
-            className="font-tactical text-xl text-gold transition-transform duration-200 group-hover:translate-x-1"
-          >
-            →
-          </span>
-        </button>
-      </Reveal>
+            <span className="font-tactical text-xl font-extrabold uppercase tracking-[0.25em] text-beige transition-colors duration-200 group-hover:text-cream">
+              {status === "submitting" ? "Odesílám..." : "Odeslat objednávku"}
+            </span>
+            {status !== "submitting" && (
+              <span
+                aria-hidden
+                className="font-tactical text-xl text-gold transition-transform duration-200 group-hover:translate-x-1"
+              >
+                →
+              </span>
+            )}
+          </button>
+          {status === "error" && errorMsg && (
+            <p className="mt-4 font-body text-sm text-rust" role="alert">
+              {errorMsg}
+            </p>
+          )}
+        </Reveal>
       </form>
     </main>
   );
@@ -204,11 +349,17 @@ function FloatingInput({
   label,
   type,
   autoComplete,
+  value,
+  onChange,
+  required,
 }: {
   id: string;
   label: string;
   type: string;
   autoComplete?: string;
+  value: string;
+  onChange: (value: string) => void;
+  required?: boolean;
 }) {
   return (
     <div className="relative">
@@ -217,6 +368,9 @@ function FloatingInput({
         name={id}
         type={type}
         autoComplete={autoComplete}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        required={required}
         placeholder=" "
         className="peer w-full border-0 border-b border-[#C8962A44] bg-transparent pb-2 pt-4 font-body text-cream outline-none transition-colors duration-200 [color-scheme:dark] focus:border-gold"
       />
