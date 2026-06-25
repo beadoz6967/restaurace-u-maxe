@@ -8,7 +8,7 @@ export default function Footer() {
   return (
     <footer className="border-t border-surface">
       <div className="mx-auto max-w-[1440px] px-6 py-16 md:px-10 md:py-24">
-        <div className="grid items-start gap-12 sm:grid-cols-2 md:grid-cols-3">
+        <div className="grid items-start gap-12 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand + address */}
           <div>
             <p className="font-tactical text-2xl font-extrabold uppercase tracking-wide text-gold">
@@ -63,6 +63,31 @@ export default function Footer() {
                 className="text-beige/80 transition-colors duration-200 hover:text-gold"
               >
                 Objednávky online → umaxe.sebou.cz
+              </a>
+            </div>
+          </div>
+
+          {/* Social */}
+          <div>
+            <p className="font-body text-[0.7rem] font-medium uppercase tracking-[0.2em] text-beige/40">
+              Sledujte nás
+            </p>
+            <div className="mt-4 inline-flex flex-col gap-4">
+              <a
+                href="https://www.instagram.com/umaxerestaurace/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between gap-4 border border-gold/40 px-4 py-2 font-tactical text-xs font-bold uppercase tracking-[0.2em] text-gold transition-colors duration-200 hover:border-gold hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary"
+              >
+                Instagram →
+              </a>
+              <a
+                href="https://www.facebook.com/UMaxeJH/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between gap-4 border border-gold/40 px-4 py-2 font-tactical text-xs font-bold uppercase tracking-[0.2em] text-gold transition-colors duration-200 hover:border-gold hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary"
+              >
+                Facebook →
               </a>
             </div>
           </div>

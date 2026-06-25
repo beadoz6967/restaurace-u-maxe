@@ -14,7 +14,6 @@ service of a professional restaurant brand.
 | Animation      | Framer Motion                               |
 | CMS            | Sanity.io (`@sanity/client`, `next-sanity`) |
 | Database / RT  | Supabase (Postgres + Realtime)              |
-| Payments       | Stripe (`stripe`, `@stripe/stripe-js`)      |
 | Deployment     | Vercel                                      |
 
 ### Design tokens
@@ -58,7 +57,6 @@ app/
     kitchen/       Kitchen display system (PIN-gated)
   api/
     orders/        Order intake route handler
-    stripe/webhook/  Stripe webhook receiver
   layout.tsx       Root layout + Google Fonts
   globals.css      CSS custom properties + body defaults
 components/
@@ -68,7 +66,6 @@ components/
   kitchen/         Kitchen-display components
 lib/
   supabase.ts      Supabase client
-  stripe.ts        Stripe client
   sanity.ts        Sanity client
 sanity/
   schemas/         Sanity content schemas
@@ -90,9 +87,6 @@ with `NEXT_PUBLIC_` are exposed to the browser; all others are server-only.
 | `NEXT_PUBLIC_SANITY_PROJECT_ID`       | Sanity project ID                      |
 | `NEXT_PUBLIC_SANITY_DATASET`          | Sanity dataset (e.g. `production`)     |
 | `SANITY_API_TOKEN`                    | Sanity write token (server only)       |
-| `STRIPE_SECRET_KEY`                   | Stripe secret key (server only)        |
-| `STRIPE_WEBHOOK_SECRET`               | Stripe webhook signing secret          |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`  | Stripe publishable key (client)        |
 | `KITCHEN_PIN`                         | PIN protecting the `/kitchen` route    |
 
 ---

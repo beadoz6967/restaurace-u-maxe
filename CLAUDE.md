@@ -17,21 +17,19 @@ Setup: `cp .env.local.example .env.local && npm install`
 
 Mad Max-themed Czech restaurant website with online ordering and a kitchen display system. **Status: Step 1 scaffold** — pages and components are intentionally empty skeletons.
 
-**Stack:** Next.js 14 App Router · TypeScript (strict) · Tailwind CSS · Framer Motion · Sanity.io (CMS) · Supabase (PostgreSQL + Realtime) · Stripe (payments)
+**Stack:** Next.js 14 App Router · TypeScript (strict) · Tailwind CSS · Framer Motion · Sanity.io (CMS) · Supabase (PostgreSQL + Realtime)
 
 ### Route Groups
 
 - `app/(public)/` — customer-facing pages: homepage, `/menu`, `/order`, `/gallery`, `/contact`
 - `app/(kitchen)/kitchen/` — PIN-protected kitchen display system (`KITCHEN_PIN` env var)
 - `app/api/orders/` — POST endpoint for order intake
-- `app/api/stripe/webhook/` — Stripe webhook receiver
 
 ### External Service Clients
 
-All three clients in `lib/` are initialized but empty (credentials stubbed out):
+Both clients in `lib/` are initialized but empty (credentials stubbed out):
 
 - `lib/supabase.ts` — needs `NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `lib/stripe.ts` — needs `STRIPE_SECRET_KEY` (server-only)
 - `lib/sanity.ts` — needs `NEXT_PUBLIC_SANITY_PROJECT_ID` + `NEXT_PUBLIC_SANITY_DATASET`; API version pinned to `2024-01-01`, `useCdn: true`
 
 Sanity project ID is `rg3vifbx`, dataset is `production` (from `.env.local.example`).
