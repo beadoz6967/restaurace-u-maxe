@@ -72,10 +72,10 @@ export default function HomeView() {
           {/* The structural word — one line, tail laces over the photo's edge. */}
           <DisplayWord
             as="h1"
-            className="mt-4 whitespace-nowrap text-gold"
+            className="mt-4 text-gold md:whitespace-nowrap"
             size="clamp(4rem, 26vw, 20rem)"
           >
-            U&nbsp;MAXE
+            U MAXE
           </DisplayWord>
           {/* Cormorant accent — single italic pull-line (use 1 of 2). */}
           <motion.p
@@ -116,12 +116,12 @@ export default function HomeView() {
             <MetadataRow items={["OBJEDNAT DO 10:00", "VYZVEDNOUT V POLEDNE"]} />
           </Reveal>
           <div className="mt-4 flex items-baseline justify-between gap-4">
-            <DisplayWord inView failsafe className="text-beige transition-colors duration-300 group-hover:text-cream">
+            <DisplayWord inView failsafe className="min-w-0 text-beige transition-colors duration-300 group-hover:text-cream">
               S SEBOU
             </DisplayWord>
             <span
               aria-hidden
-              className="shrink-0 font-tactical text-5xl font-extrabold text-gold transition-transform duration-300 group-hover:translate-x-3 md:text-8xl"
+              className="shrink-0 font-tactical text-4xl font-extrabold text-gold transition-transform duration-300 group-hover:translate-x-3 md:text-8xl"
             >
               →
             </span>

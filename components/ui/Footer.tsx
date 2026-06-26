@@ -46,13 +46,13 @@ export default function Footer() {
             <div className="mt-4 flex flex-col items-start gap-2 font-body text-sm">
               <a
                 href="tel:+420728814736"
-                className="text-gold transition-colors duration-200 hover:text-rust focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary"
+                className="block py-3 text-gold transition-colors duration-200 hover:text-rust focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary sm:py-0"
               >
                 +420 728 814 736
               </a>
               <a
                 href="mailto:Objednavkyumaxe@seznam.cz"
-                className="text-beige/80 transition-colors duration-200 hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary"
+                className="block break-words py-3 text-beige/80 transition-colors duration-200 hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary sm:py-0"
               >
                 Objednavkyumaxe@seznam.cz
               </a>
@@ -69,7 +69,7 @@ export default function Footer() {
                 href="https://www.instagram.com/umaxerestaurace/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between gap-4 border border-gold/40 px-4 py-2 font-tactical text-xs font-bold uppercase tracking-[0.2em] text-gold transition-colors duration-200 hover:border-gold hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary"
+                className="flex items-center justify-between gap-4 min-h-[44px] border border-gold/40 px-4 py-2 font-tactical sm:min-h-0 text-xs font-bold uppercase tracking-[0.2em] text-gold transition-colors duration-200 hover:border-gold hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary"
               >
                 Instagram →
               </a>
@@ -77,7 +77,7 @@ export default function Footer() {
                 href="https://www.facebook.com/UMaxeJH/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between gap-4 border border-gold/40 px-4 py-2 font-tactical text-xs font-bold uppercase tracking-[0.2em] text-gold transition-colors duration-200 hover:border-gold hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary"
+                className="flex items-center justify-between gap-4 min-h-[44px] border border-gold/40 px-4 py-2 font-tactical sm:min-h-0 text-xs font-bold uppercase tracking-[0.2em] text-gold transition-colors duration-200 hover:border-gold hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary"
               >
                 Facebook →
               </a>

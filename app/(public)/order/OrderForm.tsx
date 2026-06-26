@@ -168,61 +168,69 @@ export default function OrderForm({
               return (
                 <div
                   key={item.id}
-                  className="flex items-center gap-4 border-b border-[#C8962A22] py-4"
+                  className="flex flex-col gap-3 border-b border-[#C8962A22] py-4 sm:flex-row sm:items-center sm:gap-4"
                 >
-                  <button
-                    type="button"
-                    onClick={() => toggle(item.id)}
-                    aria-pressed={checked}
-                    aria-label={`Vybrat ${item.name}`}
-                    className={`flex h-6 w-6 shrink-0 touch-manipulation items-center justify-center border transition-colors duration-200 ${FOCUS_RING} ${
-                      checked
-                        ? "border-gold"
-                        : "border-[#C8962A44] hover:border-gold/70"
-                    }`}
-                  >
-                    {checked && <Check />}
-                  </button>
-
-                  <span className="min-w-0 flex-1 break-words font-body text-beige">
-                    {item.weight && (
-                      <span className="font-normal text-beige/40">
-                        {item.weight}{" "}
-                      </span>
-                    )}
-                    {item.name}
-                  </span>
-
-                  {/* Quantity stepper */}
-                  <div
-                    className={`flex items-center transition-opacity duration-200 ${
-                      checked ? "opacity-100" : "pointer-events-none opacity-30"
-                    }`}
-                  >
+                  {/* Checkbox + name — its own line on phones; `sm:contents`
+                      dissolves this wrapper on desktop so the row is unchanged. */}
+                  <div className="flex items-center gap-4 sm:contents">
                     <button
                       type="button"
-                      aria-label="Ubrat"
-                      onClick={() => setQuantity(item.id, count - 1)}
-                      className={`flex h-7 w-7 touch-manipulation items-center justify-center border border-[#C8962A44] font-tactical text-beige transition-colors duration-200 hover:border-rust hover:text-rust ${FOCUS_RING}`}
+                      onClick={() => toggle(item.id)}
+                      aria-pressed={checked}
+                      aria-label={`Vybrat ${item.name}`}
+                      className={`flex h-11 w-11 shrink-0 touch-manipulation items-center justify-center border transition-colors duration-200 sm:h-6 sm:w-6 ${FOCUS_RING} ${
+                        checked
+                          ? "border-gold"
+                          : "border-[#C8962A44] hover:border-gold/70"
+                      }`}
                     >
-                      −
+                      {checked && <Check />}
                     </button>
-                    <span className="w-8 text-center font-body tabular-nums text-cream">
-                      {count}
+
+                    <span className="min-w-0 flex-1 break-words font-body text-beige">
+                      {item.weight && (
+                        <span className="font-normal text-beige/40">
+                          {item.weight}{" "}
+                        </span>
+                      )}
+                      {item.name}
                     </span>
-                    <button
-                      type="button"
-                      aria-label="Přidat"
-                      onClick={() => setQuantity(item.id, count + 1)}
-                      className={`flex h-7 w-7 touch-manipulation items-center justify-center border border-[#C8962A44] font-tactical text-beige transition-colors duration-200 hover:border-gold hover:text-gold ${FOCUS_RING}`}
-                    >
-                      +
-                    </button>
                   </div>
 
-                  <span className="w-20 shrink-0 text-right font-body tabular-nums text-gold">
-                    {formatKc(item.price)}
-                  </span>
+                  {/* Stepper + price — second line on phones; `sm:contents`
+                      dissolves this wrapper on desktop. */}
+                  <div className="flex items-center justify-between gap-4 sm:contents">
+                    {/* Quantity stepper */}
+                    <div
+                      className={`flex items-center transition-opacity duration-200 ${
+                        checked ? "opacity-100" : "pointer-events-none opacity-30"
+                      }`}
+                    >
+                      <button
+                        type="button"
+                        aria-label="Ubrat"
+                        onClick={() => setQuantity(item.id, count - 1)}
+                        className={`flex h-11 w-11 touch-manipulation items-center justify-center border border-[#C8962A44] font-tactical text-beige transition-colors duration-200 hover:border-rust hover:text-rust sm:h-7 sm:w-7 ${FOCUS_RING}`}
+                      >
+                        −
+                      </button>
+                      <span className="w-8 text-center font-body tabular-nums text-cream">
+                        {count}
+                      </span>
+                      <button
+                        type="button"
+                        aria-label="Přidat"
+                        onClick={() => setQuantity(item.id, count + 1)}
+                        className={`flex h-11 w-11 touch-manipulation items-center justify-center border border-[#C8962A44] font-tactical text-beige transition-colors duration-200 hover:border-gold hover:text-gold sm:h-7 sm:w-7 ${FOCUS_RING}`}
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <span className="w-20 shrink-0 text-right font-body tabular-nums text-gold">
+                      {formatKc(item.price)}
+                    </span>
+                  </div>
                 </div>
               );
             })}

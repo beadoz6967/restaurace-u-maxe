@@ -79,7 +79,7 @@ export default function NavBar() {
             aria-label={open ? "Zavřít menu" : "Otevřít menu"}
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
-            className="flex h-8 w-8 touch-manipulation flex-col items-center justify-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary md:hidden"
+            className="flex h-11 w-11 touch-manipulation flex-col items-center justify-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary md:hidden"
           >
             <span
               className={`block h-[2px] w-7 bg-gold transition-transform duration-200 ${

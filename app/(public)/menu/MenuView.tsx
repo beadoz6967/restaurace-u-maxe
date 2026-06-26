@@ -135,7 +135,7 @@ export default function MenuView({
 function ItemName({ item, hover = false }: { item: MenuItem; hover?: boolean }) {
   return (
     <span
-      className={`font-body font-medium text-beige${
+      className={`min-w-0 break-words font-body font-medium text-beige${
         hover ? " transition-colors duration-200 group-hover:text-cream" : ""
       }`}
     >

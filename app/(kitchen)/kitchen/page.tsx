@@ -96,7 +96,7 @@ function PinGate({ onSuccess }: { onSuccess: (pin: string) => void }) {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center px-6">
+    <main className="flex min-h-[100dvh] flex-col items-center justify-center px-6">
       <form onSubmit={submit} className="flex w-full max-w-xs flex-col items-center">
         <p className="font-tactical text-sm font-bold uppercase tracking-[0.3em] text-gold">
           Kuchyně
@@ -226,7 +226,7 @@ function Board({
   );
 
   return (
-    <main className="min-h-screen px-6 py-12 md:px-10">
+    <main className="min-h-[100dvh] px-6 py-12 md:px-10">
       <header className="flex flex-wrap items-baseline justify-between gap-4 border-b border-[#C8962A33] pb-6">
         <h1 className="font-tactical text-3xl font-extrabold uppercase tracking-[0.1em] text-cream md:text-4xl">
           Objednávky
