@@ -112,11 +112,11 @@ export default function HomeView() {
           href="/order"
           className="group col-span-12 block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-4 focus-visible:ring-offset-bg-primary"
         >
-          <Reveal>
+          <Reveal failsafe>
             <MetadataRow items={["OBJEDNAT DO 10:00", "VYZVEDNOUT V POLEDNE"]} />
           </Reveal>
           <div className="mt-4 flex items-baseline justify-between gap-4">
-            <DisplayWord inView className="text-beige transition-colors duration-300 group-hover:text-cream">
+            <DisplayWord inView failsafe className="text-beige transition-colors duration-300 group-hover:text-cream">
               S SEBOU
             </DisplayWord>
             <span

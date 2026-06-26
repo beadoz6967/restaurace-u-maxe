@@ -1,9 +1,9 @@
 "use client";
 
-import { useId, useRef } from "react";
+import { useId } from "react";
 import Image from "next/image";
-import { motion, useInView } from "framer-motion";
-import { useReducedMotion } from "@/lib/use-reduced-motion";
+import { motion } from "framer-motion";
+import { useReveal } from "@/lib/use-reveal";
 
 interface PhotoCellProps {
   className?: string;
@@ -41,8 +41,10 @@ const NOISE =
  * frame, viewfinder corner markers, unifying grain/tint, desktop-only hover
  * reveal) so the mismatched phone shots read as one series. 0px edges, no shadow.
  *
- * The reveal is hook-driven into state (not `whileInView`) so it always resolves
- * to visible after a hard page load.
+ * The reveal is driven by the shared `useReveal` hook into state (not
+ * `whileInView`), so it always resolves to visible: it self-heals if the
+ * IntersectionObserver misses its initial callback while the cell is on-screen
+ * (the gallery-stays-blank bug), never stuck at the hidden clip.
  */
 export default function PhotoCell({
   className = "",
@@ -58,12 +60,8 @@ export default function PhotoCell({
   grain = true,
   hover = true,
 }: PhotoCellProps) {
-  const reduce = useReducedMotion();
-  const ref = useRef<HTMLDivElement>(null);
-  const scrolledIntoView = useInView(ref, { once: true, margin: "-12%" });
+  const { ref, show, reduce } = useReveal<HTMLDivElement>({ inView });
   const id = useId().replace(/:/g, "");
-
-  const show = reduce || !inView || scrolledIntoView;
 
   // Desktop-only (@media hover:hover) rest-muted → hover-full + gentle zoom.
   // Scale is dropped under reduced motion; touch devices get the clean state.

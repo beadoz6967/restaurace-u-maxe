@@ -1,8 +1,7 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView, type Variants } from "framer-motion";
-import { useReducedMotion } from "@/lib/use-reduced-motion";
+import { motion, type Variants } from "framer-motion";
+import { useReveal } from "@/lib/use-reveal";
 import type { CSSProperties, ReactNode, Ref } from "react";
 
 type Tag = "h1" | "h2" | "div" | "span" | "p";
@@ -30,6 +29,9 @@ interface DisplayWordProps {
   size?: string;
   /** Reveal on scroll-into-view instead of on mount. */
   inView?: boolean;
+  /** Force visible shortly after mount even if off-screen. Use for important
+   *  text that must never be permanently invisible. */
+  failsafe?: boolean;
   delay?: number;
   style?: CSSProperties;
 }
@@ -40,10 +42,11 @@ interface DisplayWordProps {
  * crushed line-height and tightened tracking. This is the loudest element
  * on every page — never decorative.
  *
- * The reveal is driven by the `useInView` hook into React state (not the
- * `whileInView` prop) so it always resolves to visible after a hard page
- * load — avoiding the App Router hydration bug where scroll-reveal elements
- * stay clipped/invisible until a client-side navigation.
+ * The reveal is driven by the shared `useReveal` hook into React state (not the
+ * `whileInView` prop) so it always resolves to visible: it self-heals if the
+ * IntersectionObserver misses its initial callback while on-screen, and with
+ * `failsafe` is force-shown shortly after mount — never stuck clipped/invisible
+ * at the SSR-rendered hidden state.
  */
 export default function DisplayWord({
   children,
@@ -51,17 +54,12 @@ export default function DisplayWord({
   className = "",
   size = "clamp(4rem, 18vw, 22rem)",
   inView = false,
+  failsafe = false,
   delay = 0,
   style,
 }: DisplayWordProps) {
-  const reduce = useReducedMotion();
-  const ref = useRef<HTMLElement>(null);
-  const scrolledIntoView = useInView(ref, { once: true, margin: "-12%" });
+  const { ref, show, reduce } = useReveal<HTMLElement>({ inView, failsafe });
   const Component = MOTION[as];
-
-  // Reveal as soon as: reduced motion, on mount (when not scroll-gated), or
-  // when scrolled into view. State-driven, so it can never stay stuck hidden.
-  const show = reduce || !inView || scrolledIntoView;
 
   return (
     <Component

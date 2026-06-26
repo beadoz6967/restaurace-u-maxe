@@ -1,9 +1,8 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView, type Variants } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import type { ReactNode } from "react";
-import { useReducedMotion } from "@/lib/use-reduced-motion";
+import { useReveal } from "@/lib/use-reveal";
 
 type Direction = "up" | "left" | "right";
 
@@ -21,13 +20,18 @@ interface RevealProps {
   delay?: number;
   /** Slide-in axis. Default `up` (the site-wide fade-rise). */
   direction?: Direction;
+  /** Force visible shortly after mount even if off-screen. Use for important
+   *  text that must never be permanently invisible. */
+  failsafe?: boolean;
 }
 
 /**
  * Fade-and-rise (or fade-and-slide) scroll reveal for text and section groups.
- * Mirrors PhotoCell's mechanism: a ref + `useInView(once, margin: "-12%")`
- * driven into `animate`, so it resolves visible immediately under reduced
- * motion or after a hard page load (never the bare-`whileInView` trap).
+ * Mirrors PhotoCell's mechanism: the shared `useReveal` hook drives `animate`,
+ * so it resolves visible immediately under reduced motion, self-heals if the
+ * IntersectionObserver misses its initial callback while on-screen, and (with
+ * `failsafe`) is force-shown shortly after mount — never the bare-`whileInView`
+ * trap, never permanently stuck at the hidden state.
  *
  * The motion.div carries `className`, so it can BE a grid/flex item (pass the
  * layout classes) without adding a layout-changing wrapper.
@@ -37,11 +41,9 @@ export default function Reveal({
   className = "",
   delay = 0,
   direction = "up",
+  failsafe = false,
 }: RevealProps) {
-  const reduce = useReducedMotion();
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-12%" });
-  const show = reduce || inView;
+  const { ref, show, reduce } = useReveal<HTMLDivElement>({ inView: true, failsafe });
 
   const variants: Variants = {
     hidden: HIDDEN[direction],
