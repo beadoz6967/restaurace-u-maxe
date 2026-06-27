@@ -36,6 +36,7 @@ const schema = {
   sameAs: [
     "https://www.facebook.com/UMaxeJH/",
     "https://www.instagram.com/umaxerestaurace/",
+    "https://www.google.com/maps?cid=1656797803097158239",
   ],
 };
 
