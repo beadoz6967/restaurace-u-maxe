@@ -41,3 +41,45 @@ export function pragueDayStartISO(): string {
   // Prague midnight expressed in UTC = that wall-clock instant minus the offset.
   return new Date(Date.parse(`${ymd}T00:00:00Z`) - offsetMs).toISOString()
 }
+
+/** Today's date in Europe/Prague as a YYYY-MM-DD string. */
+export function pragueTodayYMD(): string {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Prague',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date())
+}
+
+/** UTC↔Prague offset (ms) at a given instant (CET +1h / CEST +2h). */
+function pragueOffsetMsAt(instant: Date): number {
+  const utcWall = new Date(instant.toLocaleString('en-US', { timeZone: 'UTC' }))
+  const pragueWall = new Date(
+    instant.toLocaleString('en-US', { timeZone: 'Europe/Prague' })
+  )
+  return pragueWall.getTime() - utcWall.getTime()
+}
+
+/** Start of the given Prague day (YYYY-MM-DD), as a UTC ISO string. */
+function pragueDayStartISOForYMD(ymd: string): string {
+  // Sample the offset at the day's noon so DST transitions resolve correctly.
+  const offsetMs = pragueOffsetMsAt(new Date(`${ymd}T12:00:00Z`))
+  return new Date(Date.parse(`${ymd}T00:00:00Z`) - offsetMs).toISOString()
+}
+
+/**
+ * Half-open UTC bounds [start, nextStart) covering an arbitrary Prague day,
+ * computed per-day so it stays correct across DST transitions. Used to scope
+ * order history to a single calendar day in Prague time.
+ */
+export function pragueDayBoundsISO(ymd: string): {
+  start: string
+  nextStart: string
+} {
+  const start = pragueDayStartISOForYMD(ymd)
+  const nextYmd = new Date(Date.parse(`${ymd}T00:00:00Z`) + 86_400_000)
+    .toISOString()
+    .slice(0, 10)
+  return { start, nextStart: pragueDayStartISOForYMD(nextYmd) }
+}

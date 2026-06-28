@@ -1,0 +1,142 @@
+/* Print-ready paper menu. Intentionally plain black-on-white serif — this
+   page departs from the site's Mad Max theme on purpose, to mirror the
+   owner's existing Word printout. */
+
+@page {
+  size: A4 portrait;
+  margin: 18mm 20mm;
+}
+
+.sheet {
+  font-family: "Times New Roman", Times, serif;
+  color: #000;
+  background: #fff;
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-weight: bold;
+  font-size: 19pt;
+  margin-bottom: 26px;
+}
+.rname,
+.date {
+  text-decoration: underline;
+}
+.date {
+  white-space: nowrap;
+}
+
+.cat {
+  font-size: 15pt;
+  font-weight: bold;
+  text-decoration: underline;
+  padding-left: 14px;
+  margin: 22px 0 8px;
+}
+
+.dish {
+  font-size: 13.5pt;
+  line-height: 1.25;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+.soups .dish {
+  margin: 0 0 2px;
+  padding-left: 6px;
+}
+.mains .dish {
+  margin: 0 0 15px;
+}
+
+.sides {
+  font-size: 13.5pt;
+  display: flex;
+  gap: 48px;
+  flex-wrap: wrap;
+  margin: 18px 0 6px;
+}
+
+.foot {
+  text-align: center;
+  margin-top: 22px;
+}
+.big {
+  font-size: 15pt;
+  font-weight: bold;
+  line-height: 1.45;
+}
+.alerg {
+  font-size: 12pt;
+  margin-top: 4px;
+}
+.note {
+  font-size: 12pt;
+  font-style: italic;
+  margin-top: 6px;
+}
+
+.empty {
+  font-size: 15pt;
+}
+
+/* Screen-only controls above the sheet. */
+.controls {
+  display: flex;
+  justify-content: center;
+}
+.printButton {
+  font-family: inherit;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  padding: 0.6rem 1.4rem;
+  color: #f5ecd7;
+  background: transparent;
+  border: 1px solid #c8962a;
+  cursor: pointer;
+}
+.printButton:hover {
+  background: #c8962a;
+  color: #17130f;
+}
+
+/* On screen, present the sheet as a centered piece of A4 paper. None of this
+   reaches print — @page owns the printed margins. */
+@media screen {
+  .page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 96px 16px 64px;
+  }
+  .sheet {
+    width: 210mm;
+    max-width: 100%;
+    box-sizing: border-box;
+    min-height: 297mm;
+    padding: 18mm 20mm;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.55);
+  }
+}
+
+@media print {
+  .noPrint {
+    display: none;
+  }
+  /* The site nav (<header>) and footer live in the root/public layouts, out
+     of this route's reach. Strip them so only the menu sheet prints. These
+     :global rules load only with this page's CSS, so they don't affect other
+     routes. (The menu's own footer block uses a <div>, not <footer>.) */
+  :global(header),
+  :global(footer) {
+    display: none !important;
+  }
+  :global(html),
+  :global(body) {
+    background: #fff !important;
+  }
+}

@@ -45,3 +45,36 @@ export async function PATCH(
 
   return NextResponse.json({ ok: true })
 }
+
+// DELETE /api/orders/[id] — permanently remove a COMPLETED order (owner clearing
+// out finished history). The `.eq('status', 'done')` guard means active orders
+// can never be deleted through this path, so a cleanup can't wipe an order still
+// being prepared. Gated by the shared kitchen secret.
+export async function DELETE(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  if (req.headers.get('X-Kitchen-Token') !== process.env.KITCHEN_PIN) {
+    return NextResponse.json({ error: 'Neautorizováno.' }, { status: 401 })
+  }
+
+  const { id } = await params
+  if (!UUID_RE.test(id)) {
+    return NextResponse.json({ error: 'Neplatné ID.' }, { status: 400 })
+  }
+
+  const { error } = await supabaseAdmin
+    .from('orders')
+    .delete()
+    .eq('id', id)
+    .eq('status', 'done')
+
+  if (error) {
+    return NextResponse.json(
+      { error: 'Chyba při mazání objednávky.' },
+      { status: 500 }
+    )
+  }
+
+  return NextResponse.json({ ok: true })
+}
