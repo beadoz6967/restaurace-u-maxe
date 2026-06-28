@@ -1,5 +1,10 @@
 /** Returns true if it is currently before (or exactly) 10:00 in Europe/Prague. */
 export function isBeforeOrderCutoff(): boolean {
+  // TEMPORARY (showcase 2026-06-28): cutoff disabled so Objednávky + Kitchen
+  // can be demoed after 10:00. RESTORE the block below to re-enable the cutoff.
+  return true
+
+  /* eslint-disable no-unreachable */
   const now = new Date()
   const parts = new Intl.DateTimeFormat('cs-CZ', {
     timeZone: 'Europe/Prague',
@@ -10,6 +15,7 @@ export function isBeforeOrderCutoff(): boolean {
   const hour = parseInt(parts.find((p) => p.type === 'hour')!.value, 10)
   const minute = parseInt(parts.find((p) => p.type === 'minute')!.value, 10)
   return hour < 10 || (hour === 10 && minute === 0)
+  /* eslint-enable no-unreachable */
 }
 
 /**
